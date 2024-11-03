@@ -1,0 +1,59 @@
+# filebeat_setup.yml
+
+- name: Filebeat Setup on ARM64 without systemd
+  hosts: web  # Укажите нужные хосты в вашем инвентаре
+  become: true
+  tasks:
+    - name: Ensure gnupg and wget are installed
+      apt:
+        name:
+          - gnupg
+          - wget
+        state: present
+        update_cache: yes
+
+    - name: Download and add Elastic GPG key
+      shell: |
+        wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic-archive-keyring.gpg
+
+    - name: Add Elastic APT repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/elastic-archive-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main"
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Filebeat
+      apt:
+        name: filebeat
+        state: present
+
+    - name: Configure Filebeat
+      template:
+        src: filebeat.yml.j2
+        dest: /etc/filebeat/filebeat.yml
+        mode: '0644'
+
+    - name: Create Filebeat startup script
+      copy:
+        dest: /usr/local/bin/start_filebeat.sh
+        content: |
+          #!/bin/bash
+          /usr/share/filebeat/bin/filebeat -c /etc/filebeat/filebeat.yml
+        mode: '0755'
+
+    - name: Schedule Filebeat to run every minute via cron
+      cron:
+        name: "Start Filebeat every minute"
+        minute: "*/1"
+        job: "/usr/local/bin/start_filebeat.sh > /var/log/filebeat.log 2>&1"
+
+    - name: Verify Filebeat installation
+      shell: "/usr/share/filebeat/bin/filebeat version"
+      register: filebeat_version
+
+    - debug:
+        msg: "Filebeat version installed: {{ filebeat_version.stdout }}"
+

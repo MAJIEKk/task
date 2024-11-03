@@ -1,0 +1,26 @@
+- name: SSH Security Setup
+  hosts: all
+  become: true
+  tasks:
+    - name: Change SSH port
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port '
+        line: 'Port 2222'
+
+    - name: Disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+
+    - name: Allow only specific users
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: 'AllowUsers admin1'
+
+    - name: Restart SSH service
+      service:
+        name: ssh
+        state: restarted
+
