@@ -1,0 +1,12 @@
+- hosts: ubu1
+  roles:
+    - security
+    - ssh_hardening
+    - lemp
+    - filebeat
+
+- hosts: ubu2
+  roles:
+    - security
+    - ssh_hardening
+    - elk

@@ -1,0 +1,23 @@
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Install MySQL server
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Install PHP and required PHP extensions
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php-fpm
+    - php-mysql
+
+- name: Start and enable Nginx service
+  service:
+    name: nginx
+    state: started
+    enabled: true

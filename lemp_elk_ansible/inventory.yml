@@ -1,0 +1,6 @@
+all:
+  hosts:
+    ubu1:
+      ansible_host: <IP_ubu1>
+    ubu2:
+      ansible_host: <IP_ubu2>

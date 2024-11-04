@@ -1,0 +1,26 @@
+- name: Install Elasticsearch, Logstash, Kibana (ELK stack)
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - elasticsearch
+    - logstash
+    - kibana
+
+- name: Start and enable Elasticsearch
+  service:
+    name: elasticsearch
+    state: started
+    enabled: true
+
+- name: Start and enable Logstash
+  service:
+    name: logstash
+    state: started
+    enabled: true
+
+- name: Start and enable Kibana
+  service:
+    name: kibana
+    state: started
+    enabled: true

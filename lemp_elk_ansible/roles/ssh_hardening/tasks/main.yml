@@ -1,0 +1,22 @@
+- name: Disable root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+
+- name: Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+
+- name: Allow only specific SSH ciphers
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^Ciphers'
+    line: 'Ciphers aes256-ctr,aes192-ctr,aes128-ctr'
+
+- name: Restart SSH service
+  service:
+    name: ssh
+    state: restarted

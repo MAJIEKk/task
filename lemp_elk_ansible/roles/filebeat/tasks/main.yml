@@ -1,0 +1,15 @@
+- name: Install Filebeat
+  apt:
+    name: filebeat
+    state: present
+
+- name: Configure Filebeat to forward Nginx logs to ELK
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+
+- name: Start and enable Filebeat
+  service:
+    name: filebeat
+    state: started
+    enabled: true

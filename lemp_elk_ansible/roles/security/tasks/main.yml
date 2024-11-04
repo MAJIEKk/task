@@ -1,0 +1,27 @@
+- name: Install and configure UFW
+  apt:
+    name: ufw
+    state: present
+
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+- name: Deny all other incoming traffic by default
+  ufw:
+    default: deny
+
+- name: Allow HTTP and HTTPS (only for ubu1)
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ['80', '443'] }}"
+  when: inventory_hostname == 'ubu1'
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    enabled: true
